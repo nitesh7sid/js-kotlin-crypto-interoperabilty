@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://kjur.github.io/jsrsasign/jsrsasign-all-min.js"></script>
+</head>
+<body>
+<script>
+$(function(){
+var message = "aaa"
+var rsaKeypair = KEYUTIL.generateKeypair("RSA", 512);
+console.log(rsaKeypair)
+var sig = new KJUR.crypto.Signature({"alg": "SHA256withRSA"});
+// initialize for signature generation
+sig.init(rsaKeypair.prvKeyObj );   // rsaPrivateKey of RSAKey object
+// update data
+sig.updateString('aaa')
+// calculate signature
+var sigValueHex = sig.sign()
+console.log(sigValueHex)
+var publicKey = KEYUTIL.getPEM(rsaKeypair.pubKeyObj).replace("\n", "").replace("\r", "")
+console.log(publicKey)
+var person = {
+           	iouValue: 13,
+			signature:sigValueHex,
+			publicKey:publicKey,
+			partyName:"O=PartyB,L=New York,C=US",
+			message:"aaa"
+        }
+  $.ajax({
+            url: 'http://192.168.43.94:10009/api/example/create-iou',
+            type: 'post',
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function (data) {
+                console.log(data)
+            },
+            data: JSON.stringify(person)
+        });
+	});
+
+</script>
+
+<h2>My First JavaScript</h2>
+<p id="demo"></p>
+
+</body>
+</html> 
