@@ -39,7 +39,7 @@ class IOUContract : Contract {
             "No inputs should be consumed when issuing an IOU." using (tx.inputs.isEmpty())
             "Only one output state should be created." using (tx.outputs.size == 1)
             val out = tx.outputsOfType<IOUState>().single()
-            val b = Crypto.doVerify(Crypto.RSA_SHA256, out.publicKey, out.signature, out.message.toByteArray())
+            val b = Crypto.doVerify(Crypto.ECDSA_SECP256K1_SHA256, out.publicKey, out.signature, out.message.toByteArray())
 //            val sig = Signature.getInstance("SHA256withRSA")
 //            sig.initVerify(out.publicKey)
 //            sig.update(out.message.toByteArray())

@@ -95,7 +95,7 @@ class ExampleApi(private val rpcOps: CordaRPCOps) {
         val pubKey = getKey(encodedPubKey.toByteArray())
         val sig = request.signature.replace("\n", "").replace("\r", "")
         val sigBytes = Hex.decode(sig)
-
+        println("pubkey: "+pubKey+"\nsig: "+sig+"\nsignedbytes: "+sigBytes)
         return try {
             val signedTx = rpcOps.startTrackedFlow(::Initiator, request.iouValue, otherParty, sigBytes, pubKey, request.message).returnValue.getOrThrow()
             Response.status(CREATED).entity("Transaction id ${signedTx.id} committed to ledger.\n").build()
@@ -107,7 +107,7 @@ class ExampleApi(private val rpcOps: CordaRPCOps) {
     }
     fun getKey(publicKey: ByteArray): PublicKey {
         val publicBytes =  Base64.getDecoder().decode(publicKey)
-        return Crypto.decodePublicKey(Crypto.RSA_SHA256, publicBytes)
+        return Crypto.decodePublicKey(Crypto.ECDSA_SECP256K1_SHA256, publicBytes)
     }
 	
 	/**

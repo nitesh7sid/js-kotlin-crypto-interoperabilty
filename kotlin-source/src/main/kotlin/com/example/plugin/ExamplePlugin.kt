@@ -6,7 +6,7 @@ import net.corda.core.serialization.SerializationWhitelist
 import net.corda.webserver.services.WebServerPluginRegistry
 import java.util.function.Function
 
-class ExamplePlugin : WebServerPluginRegistry, SerializationWhitelist {
+class ExamplePlugin : WebServerPluginRegistry {
     /**
      * A list of classes that expose web APIs.
      */
@@ -20,6 +20,10 @@ class ExamplePlugin : WebServerPluginRegistry, SerializationWhitelist {
             "example" to javaClass.classLoader.getResource("exampleWeb").toExternalForm()
     )
 
+
+}
+
+class ExampleWhiteList: SerializationWhitelist{
     override val whitelist: List<Class<*>>
         get() = listOf(sun.security.rsa.RSAPublicKeyImpl::class.java,
                 java.math.BigInteger::class.java,

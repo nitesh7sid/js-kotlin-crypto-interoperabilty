@@ -8,27 +8,34 @@
 <script>
 $(function(){
 var message = "aaa"
-var rsaKeypair = KEYUTIL.generateKeypair("RSA", 512);
-console.log(rsaKeypair)
-var sig = new KJUR.crypto.Signature({"alg": "SHA256withRSA"});
+var ecKeypair = KEYUTIL.generateKeypair("EC", "secp256k1") ;
+ecKeypair.prvKeyObj.prvKeyHex= "b9eb82cc99f8df385d187287cbfb38676b44c8cae9b75f2c4ed999a9167b4952"
+ecKeypair.prvKeyObj.pubKeyHex="04e05d450a18c13108e3476b018dbdb432c0c2ff6e513206f90592d2293c6bbb105ed1c7da3711828a4279adc71faaa95d5cd216c96196fbe8e9a88cfa7d9a5e65"
+ecKeypair.pubKeyObj.pubKeyHex="04e05d450a18c13108e3476b018dbdb432c0c2ff6e513206f90592d2293c6bbb105ed1c7da3711828a4279adc71faaa95d5cd216c96196fbe8e9a88cfa7d9a5e65"
+
+console.log(ecKeypair)
+var sig = new KJUR.crypto.Signature({"alg": "SHA256withECDSA"});
 // initialize for signature generation
-sig.init(rsaKeypair.prvKeyObj );   // rsaPrivateKey of RSAKey object
+sig.init(ecKeypair.prvKeyObj );   // ecPrivateKey of ECKey object
 // update data
 sig.updateString('aaa')
 // calculate signature
 var sigValueHex = sig.sign()
-console.log(sigValueHex)
-var publicKey = KEYUTIL.getPEM(rsaKeypair.pubKeyObj).replace("\n", "").replace("\r", "")
+console.log("True Sign: ",sigValueHex)
+var fakeSignature = sigValueHex.replace("3","7")
+console.log("Fake Sign: ",fakeSignature)
+var publicKey = KEYUTIL.getPEM(ecKeypair.pubKeyObj).replace("\n", "").replace("\r", "")
 console.log(publicKey)
 var person = {
            	iouValue: 13,
+			//signature:fakeSignature,
 			signature:sigValueHex,
 			publicKey:publicKey,
 			partyName:"O=PartyB,L=New York,C=US",
 			message:"aaa"
         }
   $.ajax({
-            url: 'http://192.168.43.94:10009/api/example/create-iou',
+            url: 'http://10.244.51.201:10009/api/example/create-iou',
             type: 'post',
             dataType: 'json',
             contentType: 'application/json',
